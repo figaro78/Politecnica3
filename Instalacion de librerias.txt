@@ -21,6 +21,36 @@ str(epa_http)
 
 
 
+
+
+epa_http <- read.csv("epa-http.csv", stringsAsFactors = FALSE)
+
+colnames(epa_http) <- c("ip", "timestamp", "method", "url", "protocol", "status", "bytes")
+
+epa_http$timestamp <- gsub("\\[|\\]", "", epa_http$timestamp)
+epa_http$method <- gsub('"', "", epa_http$method)
+epa_http$url <- gsub('"', "", epa_http$url)
+epa_http$protocol <- gsub('"', "", epa_http$protocol)
+
+epa_http$timestamp <- trimws(epa_http$timestamp)
+epa_http$method <- trimws(epa_http$method)
+epa_http$url <- trimws(epa_http$url)
+epa_http$protocol <- trimws(epa_http$protocol)
+
+epa_http$status <- as.numeric(epa_http$status)
+epa_http$bytes <- suppressWarnings(as.numeric(epa_http$bytes))
+epa_http$bytes[is.na(epa_http$bytes)] <- 0
+
+epa_http$method <- as.factor(epa_http$method)
+epa_http$protocol <- as.factor(epa_http$protocol)
+
+head(epa_http)
+
+
+
+
+
+
 epa_http$error_tipo <-ifelse(epa_http$status >= 400, as.character(epa_http$status), "sin error")
 
 
