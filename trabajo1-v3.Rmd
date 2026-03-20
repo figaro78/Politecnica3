@@ -2,7 +2,9 @@
 editor_options:
   markdown:
     wrap: 72
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 # Parte 1 — Data Science
@@ -357,17 +359,161 @@ str(epa_http)
 epa_http$error_tipo <-ifelse(epa_http$status >= 400, as.character(epa_http$status), "sin error")
 
 
-
+#### h
 usuarios_error <- epa_http %>%
 group_by(ip) %>%
 summarise(tuvo_error = any(status >= 400))
 
 table(usuarios_error$tuvo_error)
 
+#library(dplyr)
+####
+
+
+usuarios_sin_error <- sum(!usuarios_error$tuvo_error)
+usuarios_con_error <- sum(usuarios_error$tuvo_error)
+
+usuarios_sin_error
+usuarios_con_error
+
+usuarios_por_error <- epa_http %>%
+filter(status >= 400) %>%
+group_by(status) %>%
+summarise(usuarios_unicos = n_distinct(ip)) %>%
+arrange(desc(usuarios_unicos))
+
+usuarios_por_error
+
+
+
+## Numero 5 ##
+
+frecuencia_metodos <- epa_http %>%
+filter(method %in% c("GET", "POST", "PUT", "DELETE")) %>%
+count(method, sort = TRUE)
+
+frecuencia_metodos
+
+--
+
+unique(epa_http$method)
+table(epa_http$method)
+
+epa_http$method <- gsub ('"', '', epa_http$method)
+epa_http$method <- trimws(epa_http$method)
+epa_http$method <- as.character(epa_http$method)
+
+epa_http_no_img <- epa_http %>%
+filter(!grepl("\\.(gif|jpg|jpeg|png|bmp|webp|svg)$", url, ignore.case = TRUE))
+
+frecuencia_metodos_no_img <- epa_http_no_img %>%
+filter(method %in% c("GET", "POST", "PUT", "DELETE")) %>%
+count(method, sort = TRUE)
+
+frecuencia_metodos_no_img
+
+nrow(epa_http_no_img)
+
+library (ggplot2)
+
+g_metodos <- ggplot(frecuencia_metodos_no_img, aes(x = method, y = n, fill = method)) +
+geom_col(color = "black", width = 0.6) + 
+geom_text(aes(label = n), vjust = -0.3) +
+labs(
+title = "Metodos HTTP sin imagenes",
+x = "Metodo",
+y = "Frecuencia"
+) + 
+theme_minimal()
+
+g_metodos
+
+#+
+#ylim(0, max(frecuencia_metodos_no_img$n) * 1.1
+
+geom_col()
+
+
+
+#### 6
+frecuencia_status <- epa_http %>%
+count(status)
+
+ggplot(frecuencia_status, aes(x = factor(status), y = n)) +
+geom_col(fill = "steelblue") +
+labs(
+title = "Frecuencia de códigos HTTP",
+x = "Codigo de estado",
+y = "Frecuencia"
+) +
+theme_minimal()
+)
+
+
+## 7 
+epa_http <- epa_http %>%
+mutate(hora = substr(timestamp, 1, 2))
+
+peticiones_por_hora <- epa_http %>%
+count(hora)
+
 library(dplyr)
+library(ggplot2)
+
+ggplot(peticiones_por_hora, aes(x = hora, y = n)) + geom_col(fill = "darkgreen"), y= "Numero de Peticiones) + theme_minimal()
+
+grafico_hora <- ggplot(data = peticiones_por_hora, aes(x = hora, y = n)) +
+geom_col(fill = "darkgreen") +
+labs(
+title = "Peticiones por hora",
+x = "Hora",
+y = "Numero de peticiones"
+) + 
+theme_minimal()
+
+grafico_hora
 
 
+names(epa_http)
+head(epa_http$timestamp)
+
+peticiones_por_hora <- epa_http %>%
+mutate(hora = substr(timestamp, 1, 2)) %>%
+count(hora)
+
+peticiones_por_hora
 
 
+# 8
+epa_http <- epa_http %>%
+mutate(url_length = nchar(url))
+
+
+datos_cluster <- epa_http %>%
+select(status, bytes, url_length) %>%
+mutate(bytes = ifelse(is.na(bytes), 0,bytes))
+
+set.seed(123)
+k2 <- kmeans(datos_cluster, centers = 2, nstart =10)
+
+
+k3 <- kmeans(datos_cluster, centers = 3, nstart = 10)
+
+datos_cluster$cluster_k2 <- k2$cluster
+datos_cluster$cluster_k3 <- k3$cluster
+
+table(datos_cluster$clusyer_k2)
+table(datos_cluster$cluster_k3)
+
+
+datos_cluster_scaled <- scale(datos_cluster[, c("status", "bytes","url_length")])
+
+k2 <- kmeans(datos_cluster_scaled, centers =2, nstart = 10)
+k3 <- kmeans(datos_cluster_scaled, centers =3, nstart = 10)
+
+table(k2$cluster)
+table(k3$cluster)
+
+## 9
 
 
