@@ -1,0 +1,369 @@
+---
+title: "Tarea numero 3"
+author: "Jesus"
+date: "2026-03-20"
+editor_options:
+  markdown:
+    wrap: 72
+output:
+  html_document:
+    df_print: paged
+---
+---
+title: "Practica03-omtr"
+author: "GRUPO 01"
+date: "2026-03-20"
+output: html_document
+---
+
+# INTEGRANTES:
+### Angel Burga
+### Fidel Garcia
+### Ofelia Tejada
+### Jesus Hurtado
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+# Cargar librerias
+```{r carga_librerias}
+library(readr)
+library(stringr)
+library(dplyr)
+
+```
+
+##Análisis de logs del servidor usando R
+Los datos analizados son:IP, Timestamp, Método HTTP, URL, Http_versión, Código de Estado, Bytes
+
+```{r cargaData}
+epa_http$timestamp <- gsub ("\\[|\\]", "", epa_http$timestamp)
+
+epa_http$timestamp <- trimws(epa_http$timestamp)
+
+epa_http$status <- as.numeric(epa_http$status)
+epa_http$bytes <- suppressWarnings(as.numeric(epa_http$bytes))
+
+epa_http$bytes[is.na(epa_http$bytes)] <- 0
+
+epa_http$method <- as.factor(epa_http$method)
+epa_http$protocolo <- as.factor(epa_http$protocolo)
+
+head(epa_http)
+str(epa_http)
+
+
+```
+
+##Exploración de datos
+
+# Pregunta 4
+Identificar el número único de usuarios que han interactuado directamente con el servidor de forma segregada según si los usuarios han tenido algún tipo de error en las distintas peticiones ofrecidas por el servidor.
+
+
+```{r PREGUNTA 4}
+epa_http$error_tipo <-ifelse(epa_http$status >= 400, as.character(epa_http$status), "sin error")
+
+usuarios_error <- epa_http %>%
+group_by(ip) %>%
+summarise(tuvo_error = any(status >= 400))
+
+table(usuarios_error$tuvo_error)
+
+#library(dplyr)
+
+####
+usuarios_sin_error <- sum(!usuarios_error$tuvo_error)
+usuarios_con_error <- sum(usuarios_error$tuvo_error)
+
+usuarios_sin_error
+usuarios_con_error
+
+usuarios_por_error <- epa_http %>%
+filter(status >= 400) %>%
+group_by(status) %>%
+summarise(usuarios_unicos = n_distinct(ip)) %>%
+arrange(desc(usuarios_unicos))
+
+usuarios_por_error
+
+
+```
+
+#Análisis de datos
+#Pregunta 5
+Analizar los distintos tipos de peticiones HTTP (GET, POST, PUT, DELETE) gestionadas por el servidor, identificando la frecuencia de cada una de estas.
+
+```{r PREGUNTA 5}
+frecuencia_metodos <- epa_http %>%
+filter(method %in% c("GET", "POST", "PUT", "DELETE")) %>%
+count(method, sort = TRUE)
+
+frecuencia_metodos
+
+unique(epa_http$method)
+table(epa_http$method)
+
+epa_http$method <- gsub ('"', '', epa_http$method)
+epa_http$method <- trimws(epa_http$method)
+epa_http$method <- as.character(epa_http$method)
+
+epa_http_no_img <- epa_http %>%
+filter(!grepl("\\.(gif|jpg|jpeg|png|bmp|webp|svg)$", url, ignore.case = TRUE))
+
+frecuencia_metodos_no_img <- epa_http_no_img %>%
+filter(method %in% c("GET", "POST", "PUT", "DELETE")) %>%
+count(method, sort = TRUE)
+
+frecuencia_metodos_no_img
+
+nrow(epa_http_no_img)
+
+library (ggplot2)
+
+g_metodos <- ggplot(frecuencia_metodos_no_img, aes(x = method, y = n, fill = method)) +
+geom_col(color = "black", width = 0.6) + 
+geom_text(aes(label = n), vjust = -0.3) +
+labs(
+title = "Metodos HTTP sin imagenes",
+x = "Metodo",
+y = "Frecuencia"
+) + 
+theme_minimal()
+
+g_metodos
+
+#+
+#ylim(0, max(frecuencia_metodos_no_img$n) * 1.1
+
+geom_col()
+
+
+
+```
+
+## Visualización de Resultados
+#Pregunta 6
+Dos gráficos distintos que permitan visualizar alguna característica relevante de los datos analizados
+
+```{r PREGUNTA 6}
+frecuencia_status <- epa_http %>%
+count(status)
+
+ggplot(frecuencia_status, aes(x = factor(status), y = n)) +
+geom_col(fill = "steelblue") +
+labs(
+title = "Frecuencia de códigos HTTP",
+x = "Codigo de estado",
+y = "Frecuencia"
+) +
+theme_minimal()
+
+
+
+```
+
+#Pregunta 7
+
+Gráfico que permite visualizar el número de peticiones servidas a lo largo del tiempo.
+
+```{r PREGUNTA 7}
+epa_http <- epa_http %>%
+mutate(hora = substr(timestamp, 1, 2))
+
+peticiones_por_hora <- epa_http %>%
+count(hora)
+
+library(dplyr)
+library(ggplot2)
+
+ggplot (data = peticiones_por_hora, aes(x = hora, y = n))+
+  geom_col(fill = "darkgreen")+
+  labs(
+    title = "Peticiones por hora",
+    x = "Hora",
+    y = "Numero de peticiones"
+  ) +
+  theme_minimal()
+
+#ggplot(peticiones_por_hora, aes(x = hora, y = n)) + geom_col(fill = "darkgreen"), y = "Numero de Peticiones"), + theme_minimal()
+
+grafico_hora <- ggplot(data = peticiones_por_hora, aes(x = hora, y = n)) +
+geom_col(fill = "darkgreen") +
+labs(
+title = "Peticiones por hora",
+x = "Hora",
+y = "Numero de peticiones"
+) + 
+theme_minimal()
+
+grafico_hora
+
+
+names(epa_http)
+head(epa_http$timestamp)
+
+peticiones_por_hora <- epa_http %>%
+mutate(hora = substr(timestamp, 1, 2)) %>%
+count(hora)
+
+peticiones_por_hora
+
+
+```
+
+## Clústering de datos
+
+#Pregunta 8 
+
+Análisis de clústering con k-means para los datos del servidor
+
+```{r PREGUNTA 8}
+epa_http <- epa_http %>%
+mutate(url_length = nchar(url))
+
+
+datos_cluster <- epa_http %>%
+select(status, bytes, url_length) %>%
+mutate(bytes = ifelse(is.na(bytes), 0,bytes))
+
+set.seed(123)
+k2 <- kmeans(datos_cluster, centers = 2, nstart =10)
+
+
+k3 <- kmeans(datos_cluster, centers = 3, nstart = 10)
+
+datos_cluster$cluster_k2 <- k2$cluster
+datos_cluster$cluster_k3 <- k3$cluster
+
+table(datos_cluster$clusyer_k2)
+table(datos_cluster$cluster_k3)
+
+
+datos_cluster_scaled <- scale(datos_cluster[, c("status", "bytes","url_length")])
+
+k2 <- kmeans(datos_cluster_scaled, centers =2, nstart = 10)
+k3 <- kmeans(datos_cluster_scaled, centers =3, nstart = 10)
+
+table(k2$cluster)
+table(k3$cluster)
+
+
+```
+
+#Pregunta 9
+
+Representación visual en gráficos de tipo scatter plot del resultado de vuestros clústering
+```{r PREGUNTA 9}
+datos_cluster$cluster_k2 <- as.factor(k2$cluster)
+datos_cluster$cluster_k3 <- as.factor(k3$cluster)
+
+# Scatter plot para k =2
+
+library(ggplot2)
+
+g_k2 <- ggplot(datos_cluster, aes(x = url_length, y = bytes, color = cluster_k2))+
+geom_point(alpha = 0.6) +
+labs(
+title = "Clustering k-means con k = 2",
+x = "Longitud de la URL",
+y = "Bytes transferidos",
+color = "Cluster"
+) +
+theme_minimal()
+
+g_k2
+
+
+
+# Scatter plot para k =3
+
+library(ggplot2)
+
+g_k3 <- ggplot(datos_cluster, aes(x = url_length, y = bytes, color = cluster_k3))+
+geom_point(alpha = 0.6) +
+labs(
+title = "Clustering k-means con k = 3",
+x = "Longitud de la URL",
+y = "Bytes transferidos",
+color = "Cluster"
+) +
+theme_minimal()
+
+g_k3
+
+
+#k = 2
+ggplot(datos_cluster, aes(x = status, y = bytes, color = cluster_k2))+
+geom_point(alpha = 0.6) +
+labs(
+title = "Clusters k=2 segun status y bytes",
+x = "Código de estado",
+y = "Bytes transferidos",
+color = "Cluster"
+) +
+theme_minimal()
+
+
+#k = 3
+
+ggplot(datos_cluster, aes(x = status, y = bytes, color = cluster_k3))+
+geom_point(alpha = 0.6) +
+labs(
+title = "Clusters k=3 según status y bytes",
+x = "Código de estado",
+y = "Bytes transferidos",
+color = "Cluster"
+) +
+theme_minimal()
+
+
+
+# Dispersión horizontal / vertical 
+ggplot(datos_cluster, aes(x = url_length, y = bytes, color = cluster_k2))+
+geom_jitter(alpha = 0.5) +
+labs(
+title = "Clustering k-means con k=2",
+x = "Longitud de la URL",
+y = "Bytes transferidos",
+color = "Cluster"
+) +
+theme_minimal()
+
+
+
+# Bloque completo
+
+library(ggplot2)
+
+datos_cluster$cluster_k2 <- as.factor(k2$cluster)
+datos_cluster$cluster_k3 <- as.factor(k3$cluster)
+
+g_k2 <- ggplot(datos_cluster, aes(x = url_length, y = bytes, color = cluster_k2))+
+geom_point(alpha = 0.6) +
+labs(
+title = "Clustering k-means con k = 2",
+x = "Longitud de la URL",
+y = "Bytes transferidos",
+color = "Cluster"
+) +
+theme_minimal()
+
+g_k3 <- ggplot(datos_cluster, aes(x = url_length, y = bytes, color = cluster_k3))+
+geom_point(alpha = 0.6) +
+labs(
+title = "Clustering k-means con k = 3",
+x = "Longitud de la URL",
+y = "Bytes transferidos",
+color = "Cluster"
+) +
+theme_minimal()
+
+g_k2
+g_k3
+
+
+```
