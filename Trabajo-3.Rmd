@@ -2,12 +2,13 @@
 title: "Tarea numero 3"
 author: "Jesus"
 date: "2026-03-20"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 editor_options:
   markdown:
     wrap: 72
-output:
-  html_document:
-    df_print: paged
 ---
 ---
 title: "Practica03-omtr"
@@ -36,6 +37,17 @@ library(dplyr)
 
 ```
 
+#
+```{r carga_datos}
+
+
+epa_http <- read_table("epa-http.csv", col_names = FALSE)
+
+dim(epa_http)
+
+colnames(epa_http) <- c("ip", "timestamp", "method", "url", "protocol", "status", "bytes")
+
+```
 ##Análisis de logs del servidor usando R
 Los datos analizados son:IP, Timestamp, Método HTTP, URL, Http_versión, Código de Estado, Bytes
 
@@ -50,7 +62,7 @@ epa_http$bytes <- suppressWarnings(as.numeric(epa_http$bytes))
 epa_http$bytes[is.na(epa_http$bytes)] <- 0
 
 epa_http$method <- as.factor(epa_http$method)
-epa_http$protocolo <- as.factor(epa_http$protocolo)
+epa_http$protocol <- as.factor(epa_http$protocol)
 
 head(epa_http)
 str(epa_http)
@@ -177,8 +189,8 @@ mutate(hora = substr(timestamp, 1, 2))
 peticiones_por_hora <- epa_http %>%
 count(hora)
 
-library(dplyr)
-library(ggplot2)
+#library(dplyr)
+#library(ggplot2)
 
 ggplot (data = peticiones_por_hora, aes(x = hora, y = n))+
   geom_col(fill = "darkgreen")+
@@ -263,7 +275,7 @@ datos_cluster$cluster_k3 <- as.factor(k3$cluster)
 
 # Scatter plot para k =2
 
-library(ggplot2)
+#library(ggplot2)
 
 g_k2 <- ggplot(datos_cluster, aes(x = url_length, y = bytes, color = cluster_k2))+
 geom_point(alpha = 0.6) +
@@ -281,7 +293,7 @@ g_k2
 
 # Scatter plot para k =3
 
-library(ggplot2)
+#library(ggplot2)
 
 g_k3 <- ggplot(datos_cluster, aes(x = url_length, y = bytes, color = cluster_k3))+
 geom_point(alpha = 0.6) +
@@ -337,7 +349,7 @@ theme_minimal()
 
 # Bloque completo
 
-library(ggplot2)
+#library(ggplot2)
 
 datos_cluster$cluster_k2 <- as.factor(k2$cluster)
 datos_cluster$cluster_k3 <- as.factor(k3$cluster)
