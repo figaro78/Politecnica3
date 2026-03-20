@@ -8,9 +8,13 @@ output: pdf_document
 # Parte 1 — Data Science
 
 # INTEGRANTES:
+
 ### Angel Burga
+
 ### Fidel Garcia
+
 ### Ofelia Tejada
+
 ### Jesus Hurtado
 
 ### 1) Dado un registro de vehículos que circulan por una autopista, disponemos de su marca y modelo, país de matriculación, y tipo de vehículo (por número de ruedas). Con tal de ajustar precios de los peajes, ¿Cuántos vehículos tenemos por tipo? ¿Cuál es el tipo más frecuente? ¿De qué países tenemos más vehículos?
@@ -311,9 +315,11 @@ sum(url == "/", na.rm = TRUE)
 
 ### Aprovechando que hemos separado la petición en 3 partes (Tipo, URL, Protocolo) ¿Cuantas peticiones NO tienen como protocolo "HTTP/0.2"?
 
-Se analizó la columna de protocolo (X5), eliminando previamente las comillas para asegurar una correcta comparación.
+Se analizó la columna de protocolo (X5), eliminando previamente las
+comillas para asegurar una correcta comparación.
 
-Se contabilizaron las peticiones cuyo protocolo es distinto de "HTTP/0.2", obteniendo un total de
+Se contabilizaron las peticiones cuyo protocolo es distinto de
+"HTTP/0.2", obteniendo un total de
 
 ```{r}
 protocolo <- gsub('"', "", epa_http$X5)
@@ -324,3 +330,5 @@ sum(protocolo != "HTTP/0.2", na.rm = TRUE)
 ```{r}
 table(protocolo)
 ```
+
+
