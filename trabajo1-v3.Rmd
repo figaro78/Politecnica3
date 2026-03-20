@@ -1,0 +1,326 @@
+---
+editor_options:
+  markdown:
+    wrap: 72
+output: pdf_document
+---
+
+# Parte 1 — Data Science
+
+# INTEGRANTES:
+### Angel Burga
+### Fidel Garcia
+### Ofelia Tejada
+### Jesus Hurtado
+
+### 1) Dado un registro de vehículos que circulan por una autopista, disponemos de su marca y modelo, país de matriculación, y tipo de vehículo (por número de ruedas). Con tal de ajustar precios de los peajes, ¿Cuántos vehículos tenemos por tipo? ¿Cuál es el tipo más frecuente? ¿De qué países tenemos más vehículos?
+
+**Clasificación:** Descriptiva.
+
+**Justificación:**\
+Esta pregunta busca resumir y describir las características de un
+conjunto de datos ya observado. Se pretende conocer cuántos vehículos
+existen por tipo, cuál es el tipo más frecuente y de qué países
+provienen. No se intenta predecir comportamientos futuros ni establecer
+relaciones causales, sino únicamente describir la distribución de los
+datos.
+
+### 2) Dado un registro de visualizaciones de un servicio de video-on-demand, donde disponemos de los datos del usuario, de la película seleccionada, fecha de visualización y categoría de la película, queremos saber ¿Hay alguna preferencia en cuanto a género literario según los usuarios y su rango de edad?
+
+**Clasificación:** Exploratoria.
+
+**Justificación:**\
+El objetivo es descubrir posibles patrones o relaciones entre variables
+del conjunto de datos, concretamente entre el rango de edad de los
+usuarios y sus preferencias de género en el servicio de video bajo
+demanda. Este tipo de análisis busca identificar tendencias o
+asociaciones sin formular todavía un modelo predictivo o inferir
+causalidad.
+
+### 3) Dado un registro de peticiones a un sitio web, vemos que las peticiones que provienen de una red de telefonía concreta acostumbran a ser incorrectas y provocarnos errores de servicio. ¿Podemos determinar si en el futuro, los próximos mensajes de esa red seguirán dando problemas? ¿Hemos notado el mismo efecto en otras redes de telefonía?
+
+**Clasificación:** Predictiva.
+
+**Justificación:**\
+La pregunta pretende determinar si las peticiones futuras provenientes
+de una red concreta seguirán presentando errores y si este
+comportamiento podría aparecer también en otras redes. Por lo tanto, el
+objetivo es anticipar eventos futuros a partir de patrones detectados en
+datos históricos, lo cual corresponde a un análisis predictivo.
+
+### 4) Dado los registros de usuarios de un servicio de compras por internet, los usuarios pueden agruparse por preferencias de productos comprados. Queremos saber si ¿Es posible que, dado un usuario al azar y según su historial, pueda ser directamente asignado a un o diversos grupos?
+
+**Clasificación:** Predictiva.
+
+**Justificación:**\
+Se busca determinar si un usuario puede ser asignado a uno o varios
+grupos basándose en su historial de compras. Este tipo de problema
+corresponde a una tarea de clasificación, donde el sistema utiliza datos
+existentes para predecir a qué grupo pertenece una nueva observación.
+
+## Pregunta 2
+
+En este escenario se sospecha que un usuario de la red empresarial ha
+expuesto un servicio web no autorizado hacia Internet. Se dispone de
+registros de conexiones TCP salientes de cada equipo de la red
+corporativa, pero no se desea realizar un escaneo de puertos en cada
+ordenador. El objetivo es utilizar técnicas de **Data Science** para
+reducir la lista de posibles responsables.
+
+### a) Obtención de los datos
+
+Los datos necesarios para el análisis podrían obtenerse de diferentes
+fuentes dentro de la infraestructura de red:
+
+-   registros de conexiones TCP salientes de cada equipo corporativo
+-   logs del firewall o proxy de la organización
+-   registros de sistemas de monitorización de red
+-   inventario de equipos y usuarios de la red corporativa
+-   listas de servicios autorizados o entornos de pruebas
+
+Los registros de red deberían incluir información como:
+
+-   dirección IP interna del equipo
+-   usuario asociado al equipo
+-   dirección IP de destino
+-   puerto de destino
+-   fecha y hora de la conexión
+-   número de conexiones realizadas
+-   volumen de datos transmitidos
+
+Esta información permitiría identificar patrones de comportamiento en
+las conexiones de los equipos.
+
+### b) Tratamiento de los datos
+
+Una vez obtenidos los datos, sería necesario realizar una fase de
+preparación que incluya:
+
+-   eliminación de registros duplicados
+-   corrección de formatos de fecha y hora
+-   filtrado de conexiones internas que no salen de la red
+-   eliminación de registros incompletos
+-   normalización de nombres de usuarios o equipos
+
+También sería útil enriquecer los datos con información adicional, como:
+
+-   clasificación de puertos conocidos (por ejemplo 80, 443, 8080)
+-   geolocalización de las direcciones IP externas
+-   identificación de servicios autorizados dentro de la empresa
+
+El objetivo de esta fase es garantizar que los datos sean consistentes y
+adecuados para el análisis posterior.
+
+### c) Preguntas de análisis
+
+Algunas preguntas que podrían ayudar a reducir la lista de sospechosos
+son:
+
+-   ¿Qué equipos realizan un número inusualmente alto de conexiones
+    salientes hacia puertos web?
+-   ¿Qué usuarios mantienen conexiones recurrentes hacia los mismos
+    destinos externos?
+-   ¿Existen equipos que reciben muchas conexiones externas a través de
+    conexiones previamente establecidas?
+-   ¿Qué conexiones se producen fuera del horario laboral habitual?
+-   ¿Qué equipos presentan patrones de tráfico diferentes al
+    comportamiento general de la red?
+
+Estas preguntas permiten identificar comportamientos anómalos que
+podrían indicar la presencia de un servicio web expuesto.
+
+### d) Análisis y técnicas de Data Science
+
+El análisis podría comenzar con técnicas descriptivas y exploratorias
+para entender el comportamiento normal de la red. Por ejemplo:
+
+-   número de conexiones salientes por equipo
+-   puertos más utilizados
+-   destinos externos más frecuentes
+-   distribución de conexiones a lo largo del tiempo
+
+Posteriormente podrían aplicarse técnicas más analíticas, como:
+
+-   detección de anomalías para identificar equipos cuyo patrón de
+    conexiones difiere significativamente del resto
+-   clustering para agrupar equipos con comportamientos similares
+-   creación de métricas de riesgo basadas en el número de conexiones
+    externas, frecuencia y persistencia
+
+Este enfoque permitiría identificar un conjunto reducido de equipos cuyo
+comportamiento es más compatible con la exposición de un servicio web.
+
+### e) Datos y gráficos a obtener
+
+Para facilitar el análisis y la interpretación de resultados podrían
+generarse:
+
+-   tablas con el número de conexiones salientes por equipo
+-   gráficos de barras con los puertos de destino más utilizados
+-   histogramas de conexiones por hora del día
+-   gráficos de dispersión entre número de conexiones y número de
+    destinos externos
+-   rankings de equipos con mayor actividad externa
+
+Estos gráficos permitirían detectar rápidamente comportamientos fuera de
+lo común.
+
+### f) Comunicación de resultados
+
+Los resultados del análisis deberían comunicarse mediante un informe
+claro que incluya:
+
+-   descripción del problema analizado
+-   fuentes de datos utilizadas
+-   metodología aplicada
+-   gráficos y tablas con los resultados obtenidos
+
+# PARTE 2
+
+```{r carga_librerias}
+
+library(readr)
+
+epa_http <- read_table("epa-http.csv", col_names = FALSE)
+
+```
+
+## Pregunta 1
+
+### Cuales son las dimensiones del dataset cargado (número de filas y columnas)
+
+```{r p1}
+dim(epa_http)
+```
+
+### Valor medio de la columna Bytes
+
+El valor medio de la columna Bytes se calculó excluyendo los valores
+faltantes (representados como “-”). El resultado obtenido es
+
+```{r}
+mean(as.numeric(ifelse(epa_http$X7 == "-", NA, epa_http$X7)), na.rm = TRUE)
+```
+
+## Pregunta 2
+
+### De las diferentes IPs de origen accediendo al servidor, ¿cuantas pertenecen a una IP claramente educativa (que contenga ".edu")?
+
+Rpta: Se identificaron
+
+```{r}
+length(unique(epa_http$X1[grepl("\\.edu$", epa_http$X1)]))
+```
+
+No se han considerado las peticiones repetidas, ya que un mismo host
+puede realizar múltiples accesos al servidor, y el objetivo es
+contabilizar únicamente las IPs de origen distintas.
+
+```         
+1.  grepl("\\.edu$", epa_http$X1)
+```
+
+## Pregunta 3
+
+### De todas las peticiones recibidas por el servidor cual es la hora en la que hay mayor volumen de peticiones HTTP de tipo "GET"?
+
+Para el análisis de la hora con mayor volumen de peticiones, no se
+consideró únicamente la hora de forma aislada, ya que las peticiones se
+distribuyen en distintos días.
+
+En su lugar, se combinó el día y la hora para evitar la agregación
+incorrecta de eventos ocurridos en días diferentes. Esto permite
+identificar correctamente los periodos de mayor actividad dentro del
+dataset.
+
+```{r}
+tiempo <- gsub("\\[|\\]", "", epa_http$X2)
+partes <- strsplit(tiempo, ":")
+
+dia <- sapply(partes, function(x) x[1])
+hora <- sapply(partes, function(x) x[2])
+
+dia_hora <- paste(dia, hora, sep = "-")
+```
+
+```{r}
+tabla <- table(dia_hora[epa_http$X3 == "\"GET"])
+names(tabla)[which.max(tabla)]
+```
+
+El mayor volumen de peticiones HTTP de tipo GET se registró el día
+
+```{r}
+strsplit(names(tabla)[which.max(tabla)], "-")[[1]][1]
+```
+
+A las
+
+```{r}
+strsplit(names(tabla)[which.max(tabla)], "-")[[1]][2]
+```
+
+Y el numero maximo de peticiones fue
+
+```{r}
+max(tabla)
+```
+
+## Pregunta 4
+
+### De las peticiones hechas por instituciones educativas (.edu), ¿Cuantos bytes en total se han transmitido, en peticiones de descarga de ficheros de texto ".txt"?
+
+El total de bytes transmitidos en peticiones de descarga de archivos
+.txt realizadas por instituciones educativas (.edu) es de
+
+```{r}
+sum(
+  as.numeric(ifelse(epa_http$X7 == "-", NA, epa_http$X7))[
+    grepl("\\.edu$", epa_http$X1) & grepl("\\.txt$", epa_http$X4)
+  ],
+  na.rm = TRUE
+)
+```
+
+Para este cálculo se consideraron únicamente las peticiones cuyo host
+termina en .edu y cuyo recurso solicitado termina en .txt. Además, se
+excluyeron los valores faltantes ("-") de la columna bytes, ya que no
+representan valores numéricos válidos.
+
+## Pregunta 5
+
+### Si separamos la petición en 3 partes (Tipo, URL, Protocolo), usando str_split y el separador " " (espacio), ¿cuantas peticiones buscan directamente la URL = "/"?
+
+Para resolver esta pregunta se separó la cadena de petición en tres
+componentes: tipo de petición, URL y protocolo, utilizando el separador
+de espacio.
+
+Posteriormente, se extrajo la URL (segunda posición) y se contabilizaron
+aquellas peticiones cuya URL es exactamente "/".
+
+El número de peticiones dirigidas a la raíz del servidor fue de
+
+```{r}
+peticion_completa <- paste(epa_http$X3, epa_http$X4, epa_http$X5)
+peticiones <- strsplit(peticion_completa, " ")
+url <- sapply(peticiones, function(x) x[2])
+sum(url == "/", na.rm = TRUE)
+```
+
+## Pregunta 6
+
+### Aprovechando que hemos separado la petición en 3 partes (Tipo, URL, Protocolo) ¿Cuantas peticiones NO tienen como protocolo "HTTP/0.2"?
+
+Se analizó la columna de protocolo (X5), eliminando previamente las comillas para asegurar una correcta comparación.
+
+Se contabilizaron las peticiones cuyo protocolo es distinto de "HTTP/0.2", obteniendo un total de
+
+```{r}
+protocolo <- gsub('"', "", epa_http$X5)
+
+sum(protocolo != "HTTP/0.2", na.rm = TRUE)
+```
+
+```{r}
+table(protocolo)
+```
